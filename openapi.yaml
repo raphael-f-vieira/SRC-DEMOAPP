@@ -1,0 +1,373 @@
+openapi: 3.0.3
+info:
+  title: Swagger DemoApplication
+  description: |-
+    Este é uma aplicação demonstrativa utilizando Java e Spring Boot com o intuito de fornecer uma API REST para manter o cadastro de beneficiários de um plano de saúde.
+    
+    Nela estão expostos os seguintes endpoints para executar as seguintes operações:
+    - Cadastrar um beneficiário junto com seus documentos;
+    - Listar todos os beneficiários cadastrados;
+    - Listar todos os documentos de um beneficiário a partir de seu id;
+    - Atualizar os dados cadastrais de um beneficiário;
+    - Remover um beneficiário.
+  version: 1.0.0
+tags:
+  - name: beneficiarios
+    description: Nela é possível realizar as seguintes ações abaixo
+  - name: documentos
+    description: Nela é possível realizar as seguintes ações abaixo
+  - name: users
+    description: Nela é possível realizar as seguintes ações abaixo
+paths:
+  /beneficiarios:
+    post:
+      tags:
+        - beneficiarios
+      summary: Adicione um novo beneficiario
+      description: Criar um novo beneficiario com um documento.
+      operationId: addBeneficiario
+      requestBody:
+        description: Crie um novo beneficiario
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Beneficiario'
+        required: true
+      responses:
+        '200':
+          description: Successful Operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BeneficiarioDTO'
+        '400':
+          description: Invalid input
+        '422':
+          description: Validation exception
+    get:
+      tags:
+        - beneficiarios
+      summary: Lista todos os beneficiarios cadastrados
+      description: Lista todos os beneficiarios cadastrados.
+      operationId: getBeneficiario
+      responses:
+        '200':
+          description: Successful Operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BeneficiarioDTO'
+  /beneficiarios/{beneficiarioId}:
+    get:
+      tags:
+        - beneficiarios
+      summary: Encontre um beneficiario por ID
+      description: Retorna um único beneficiario.
+      operationId: getBeneficiarioById
+      parameters:
+        - name: beneficiarioId
+          in: path
+          description: ID do beneficiario a ser pesquisado
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Successful Operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BeneficiarioDTO'
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Not Found
+    delete:
+      tags:
+        - beneficiarios
+      summary: Excluir um beneficiario por ID
+      description: Excluir um beneficiario por ID.
+      operationId: deleteBeneficiario
+      parameters:
+        - name: beneficiarioId
+          in: path
+          description: Necessário passar o 'id' do beneficiario que desejar deletar no final da URL.
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Successful Operation
+        '400':
+          description: Invalid ID Supplied
+        '404':
+          description: Not Found
+    put:
+      tags:
+        - beneficiarios
+      summary: Atualiza somente os dados de um beneficiario
+      description: Atualiza somente os dados de um beneficiario. Necessário passar o 'id' do beneficiario que deseja atualizar no final da URL.
+      operationId: updateBeneficiario
+      parameters:
+        - name: beneficiarioId
+          in: path
+          description: Id do beneficiario precisa ser atualizado.
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        description: Atualizar um beneficiario existente na BD
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AtualizaBeneficiarioFormDTO'
+      responses:
+        '200':
+          description: Successful Operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BeneficiarioDTO'
+        '404':
+          description: Beneficiario não encontrado
+  /documentos:
+    post:
+      tags:
+        - documentos
+      summary: Criar um novo documento associado a um beneficiario
+      description: Criar um novo documento associado a um beneficiario já cadastrado em BD pelo beneficiario_id.
+      operationId: placeDocumento
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Documento'
+      responses:
+        '200':
+          description: Documento registrado com sucesso!!!
+        '400':
+          description: Invalid input
+        '422':
+          description: Validation exception
+  /documentos/{documentoId}:
+    put:
+      tags:
+        - documentos
+      summary: Atualiza documento
+      description: Atualiza somente os dados de um documento. Necessário passar o 'id' do documento que deseja atualizar no final da URL.
+      operationId: updateDocumento
+      parameters:
+        - name: documentoId
+          in: path
+          description: Id do documento que precisa ser atualizado.
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        description: Atualiza um documento cadastrado na BD.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DocumentoPut'
+      responses:
+        '200':
+          description: Successful Operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DocumentoDTO'
+        '404':
+          description: Documento não encontrado
+    delete:
+      tags:
+        - documentos
+      summary: Exclui um documento atraves do id
+      description: Necessário passar o 'id' do documento que desejar deletar no final da URL.
+      operationId: deleteDocumento
+      parameters:
+        - name: documentoId
+          in: path
+          description: Id do documento que sera deletado
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Successful Operation
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Not Found
+  /users:
+    post:
+      tags:
+        - users
+      summary: Criar usuário
+      description: Criação de usuário somente para testes de autenticação/autorização via token JWT.
+      operationId: createUsers
+      requestBody:
+        description: Objeto de usuário criado
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Users'
+      responses:
+        '200':
+          description: Successful Operation
+  /users/login:
+    post:
+      tags:
+        - users
+      summary: Registra o usuário no sistema
+      description: Logando o usuário para obter um token JWT.
+      operationId: loginUsers
+      requestBody:
+        description: Objeto de usuário
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginUserDto'
+      responses:
+        '200':
+          description: Successful Operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Token'
+        '400':
+          description: Invalid username/password supplied
+components:
+  schemas:
+    Documento:
+      type: object
+      properties:
+        beneficiarioId:
+          type: integer
+          format: int64
+          example: 1
+        tipoDocumento:
+          type: string
+          example: CPF
+        descricao:
+          type: string
+          example: Documento CPF da Maria
+    DocumentoPut:
+      type: object
+      properties:
+        tipoDocumento:
+          type: string
+          example: CPF
+        descricao:
+          type: string
+          example: Documento CPF da Maria
+    DocumentoDTO:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 322
+        tipoDocumento:
+          type: string
+          example: CPF
+        descricao:
+          type: string
+          example: Documento CPF da Maria
+        dataInclusao:
+          type: string
+          format: date-time
+          example: 1965-05-31
+        dataAtualizacao:
+          type: string
+          format: date-time
+          example: 1965-05-31
+    Beneficiario:
+      type: object
+      properties:
+        nome:
+          type: string
+          example: maria
+        telefone:
+          type: string
+          example: (99)99999-9999
+        dataNascimento:
+          type: string
+          format: date-time
+          example: 1965-05-31
+        documentos:
+          $ref: '#/components/schemas/DocumentoPut'
+    BeneficiarioDTO:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 322
+        nome:
+          type: string
+          example: maria
+        telefone:
+          type: string
+          example: (99)99999-9999
+        dataNascimento:
+          type: string
+          format: date-time
+          example: 1965-05-31
+        dataInclusao:
+          type: string
+          format: date-time
+          example: 1965-05-31
+        dataAtualizacao:
+          type: string
+          format: date-time
+          example: 1965-05-31
+        documentos:
+          $ref: '#/components/schemas/DocumentoDTO'
+    AtualizaBeneficiarioFormDTO:
+      type: object
+      properties:
+        nome:
+          type: string
+          example: maria
+        telefone:
+          type: string
+          example: (99)99999-9999
+        dataNascimento:
+          type: string
+          format: date-time
+          example: 1965-05-31
+    Users:
+      type: object
+      properties:
+        email:
+          type: string
+          example: customer@email.com
+        password:
+          type: string
+          example: 123456789
+        role:
+          type: string
+          description: papel/função do user da aplicação
+          enum:
+            - ROLE_CUSTOMER
+            - ROLE_ADMINISTRATOR
+    LoginUserDto:
+      type: object
+      properties:
+        email:
+          type: string
+          example: customer@email.com
+        password:
+          type: string
+          example: 123456789
+    Token:
+      type: object
+      properties:
+        token:
+          type: string
+          example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJkZW1vYXBwLWFwaSIsImlhdCI6MTcwNzk3MDMzNiwiZXhwIjoxNzA3OTg0NzM2LCJzdWIiOiJjdXN0b21lckBlbWFpbC5jb20ifQ.7f4up2ClNiDubCYvYFIt9nzt--HfYVNVL_HxyfmsOBA
